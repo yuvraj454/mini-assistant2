@@ -1,50 +1,16 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { TaskCard } from './TaskCard';
-
-// Mock data - in a real app, this would come from your state management
-const mockTasks = [
-  {
-    id: '1',
-    title: 'Morning workout at the gym',
-    category: 'gym' as const,
-    time: '7:00 AM',
-    urgency: 3,
-    completed: false,
-  },
-  {
-    id: '2',
-    title: 'Review quarterly reports',
-    category: 'business' as const,
-    time: '10:30 AM',
-    urgency: 4,
-    completed: false,
-  },
-  {
-    id: '3',
-    title: 'Grocery shopping',
-    category: 'home' as const,
-    time: '2:00 PM',
-    urgency: 2,
-    completed: true,
-  },
-  {
-    id: '4',
-    title: 'Call mom',
-    category: 'home' as const,
-    time: '6:00 PM',
-    urgency: 5,
-    completed: false,
-  },
-];
+import { useTask } from '@/contexts/TaskContext';
 
 export const TodaySchedule = () => {
-  const [tasks, setTasks] = useState(mockTasks);
+  const { tasks, updateTask, deleteTask } = useTask();
 
   const handleCompleteTask = (id: string) => {
-    setTasks(tasks.map(task => 
-      task.id === id ? { ...task, completed: !task.completed } : task
-    ));
+    const task = tasks.find(t => t.id === id);
+    if (task) {
+      updateTask(id, { completed: !task.completed });
+    }
   };
 
   const handleEditTask = (id: string) => {

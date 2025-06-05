@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Layout } from '@/components/Layout';
 import { Button } from '@/components/ui/button';
@@ -8,11 +7,14 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
-import { Mic, Calendar, MapPin, Save, Plus } from 'lucide-react';
+import { Mic, Calendar, MapPin, Save, Plus, Bell } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTask } from '@/contexts/TaskContext';
+import { toast } from '@/hooks/use-toast';
 
 const AddTask = () => {
   const navigate = useNavigate();
+  const { addTask } = useTask();
   const [task, setTask] = useState('');
   const [location, setLocation] = useState('');
   const [time, setTime] = useState('');
@@ -20,15 +22,66 @@ const AddTask = () => {
   const [category, setCategory] = useState('');
   const [urgency, setUrgency] = useState([3]);
   const [addToVision, setAddToVision] = useState(false);
+  const [reminderTime, setReminderTime] = useState('');
 
   const handleSaveTask = () => {
-    console.log('Saving task:', { task, location, time, notes, category, urgency: urgency[0], addToVision });
-    // Here you would integrate with your task management system
+    if (!task.trim()) {
+      toast({
+        title: "Oops! 📝",
+        description: "Please enter a task title first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newTask = addTask({
+      title: task.trim(),
+      location: location || undefined,
+      time: time || undefined,
+      notes: notes || undefined,
+      category: (category as 'home' | 'business' | 'gym' | 'custom') || 'home',
+      urgency: urgency[0],
+      completed: false,
+      reminderTime: reminderTime || undefined,
+    });
+
+    toast({
+      title: "Task created! 🎉",
+      description: `"${task.trim()}" has been added to your schedule.`,
+    });
+
+    console.log('Saving task:', newTask);
     navigate('/');
   };
 
   const handleSaveAndAddAnother = () => {
-    console.log('Saving task and adding another:', { task, location, time, notes, category, urgency: urgency[0], addToVision });
+    if (!task.trim()) {
+      toast({
+        title: "Oops! 📝",
+        description: "Please enter a task title first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const newTask = addTask({
+      title: task.trim(),
+      location: location || undefined,
+      time: time || undefined,
+      notes: notes || undefined,
+      category: (category as 'home' | 'business' | 'gym' | 'custom') || 'home',
+      urgency: urgency[0],
+      completed: false,
+      reminderTime: reminderTime || undefined,
+    });
+
+    toast({
+      title: "Task saved! ✨",
+      description: "Ready for another one?",
+    });
+
+    console.log('Saving task and adding another:', newTask);
+    
     // Reset form
     setTask('');
     setLocation('');
@@ -37,6 +90,7 @@ const AddTask = () => {
     setCategory('');
     setUrgency([3]);
     setAddToVision(false);
+    setReminderTime('');
   };
 
   return (
@@ -92,6 +146,22 @@ const AddTask = () => {
               />
               <Button variant="outline" size="icon" className="rounded-xl border-lavender-200">
                 <Calendar className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="reminder">Remind me when? (Optional)</Label>
+            <div className="flex gap-2">
+              <Input
+                id="reminder"
+                type="datetime-local"
+                value={reminderTime}
+                onChange={(e) => setReminderTime(e.target.value)}
+                className="rounded-xl border-lavender-200 focus:border-lavender-400"
+              />
+              <Button variant="outline" size="icon" className="rounded-xl border-lavender-200">
+                <Bell className="h-4 w-4" />
               </Button>
             </div>
           </div>

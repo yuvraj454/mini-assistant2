@@ -3,16 +3,28 @@ import React, { useState } from 'react';
 import { Mic, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useTask } from '@/contexts/TaskContext';
+import { toast } from '@/hooks/use-toast';
 
 export const QuickTaskInput = () => {
   const [task, setTask] = useState('');
   const [isListening, setIsListening] = useState(false);
+  const { addTask } = useTask();
 
   const handleAddTask = () => {
     if (task.trim()) {
-      console.log('Adding task:', task);
+      addTask({
+        title: task.trim(),
+        category: 'home',
+        urgency: 3,
+        completed: false,
+      });
+      
       setTask('');
-      // Here you would integrate with your task management system
+      toast({
+        title: "Task added! ✨",
+        description: `"${task.trim()}" has been added to your schedule.`,
+      });
     }
   };
 
