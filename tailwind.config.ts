@@ -63,7 +63,43 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// MyMiniSecretary color palette
+				// Warm cream color palette
+				cream: {
+					50: '#fffdf7',
+					100: '#fffaeb',
+					200: '#fef3d3',
+					300: '#fde8a7',
+					400: '#fbd770',
+					500: '#f8c542',
+					600: '#e8a615',
+					700: '#c17d10',
+					800: '#9c6015',
+					900: '#7f4e14'
+				},
+				amber: {
+					50: '#fffbeb',
+					100: '#fef3c7',
+					200: '#fde68a',
+					300: '#fcd34d',
+					400: '#fbbf24',
+					500: '#f59e0b',
+					600: '#d97706',
+					700: '#b45309',
+					800: '#92400e',
+					900: '#78350f'
+				},
+				orange: {
+					50: '#fff7ed',
+					100: '#ffedd5',
+					200: '#fed7aa',
+					300: '#fdba74',
+					400: '#fb923c',
+					500: '#f97316',
+					600: '#ea580c',
+					700: '#c2410c',
+					800: '#9a3412',
+					900: '#7c2d12'
+				},
 				sky: {
 					50: '#f0f9ff',
 					100: '#e0f2fe',
@@ -90,14 +126,6 @@ export default {
 					400: '#f7c373',
 					500: '#f3a952',
 					600: '#ed8936'
-				},
-				cream: {
-					50: '#fffef7',
-					100: '#fffceb',
-					200: '#fef7cd',
-					300: '#fcf0a4',
-					400: '#f9e071',
-					500: '#f5cc47'
 				}
 			},
 			borderRadius: {

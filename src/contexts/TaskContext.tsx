@@ -7,7 +7,10 @@ interface TaskContextType {
   addTask: (task: Omit<Task, 'id'>) => Task;
   updateTask: (id: string, updates: Partial<Task>) => void;
   deleteTask: (id: string) => void;
+  clearAllTasks: () => void;
   scheduleReminder: (task: Task) => void;
+  getTodaysTasks: () => Task[];
+  getRegularTasks: () => Task[];
 }
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);

@@ -11,45 +11,34 @@ export interface Task {
   location?: string;
   notes?: string;
   reminderTime?: string;
+  isRegular?: boolean;
+  completedAt?: string;
 }
 
-const mockInitialTasks: Task[] = [
-  {
-    id: '1',
-    title: 'Morning workout at the gym',
-    category: 'gym',
-    time: '7:00 AM',
-    urgency: 3,
-    completed: false,
-  },
-  {
-    id: '2',
-    title: 'Review quarterly reports',
-    category: 'business',
-    time: '10:30 AM',
-    urgency: 4,
-    completed: false,
-  },
-  {
-    id: '3',
-    title: 'Grocery shopping',
-    category: 'home',
-    time: '2:00 PM',
-    urgency: 2,
-    completed: true,
-  },
-  {
-    id: '4',
-    title: 'Call mom',
-    category: 'home',
-    time: '6:00 PM',
-    urgency: 5,
-    completed: false,
-  },
-];
+const mockInitialTasks: Task[] = [];
 
 export const useTaskManager = () => {
   const [tasks, setTasks] = useState<Task[]>(mockInitialTasks);
+
+  useEffect(() => {
+    const savedTasks = localStorage.getItem('myminisecretary-tasks');
+    if (savedTasks) {
+      const parsedTasks = JSON.parse(savedTasks);
+      // Remove completed tasks older than 1 day
+      const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      const filteredTasks = parsedTasks.filter((task: Task) => {
+        if (task.completed && task.completedAt) {
+          return new Date(task.completedAt) > oneDayAgo;
+        }
+        return true;
+      });
+      setTasks(filteredTasks);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('myminisecretary-tasks', JSON.stringify(tasks));
+  }, [tasks]);
 
   const addTask = (newTask: Omit<Task, 'id'>) => {
     const task: Task = {
@@ -59,7 +48,6 @@ export const useTaskManager = () => {
     
     setTasks(prev => [...prev, task]);
     
-    // Schedule reminder if time is set
     if (task.time && task.reminderTime) {
       scheduleReminder(task);
     }
@@ -68,13 +56,24 @@ export const useTaskManager = () => {
   };
 
   const updateTask = (id: string, updates: Partial<Task>) => {
-    setTasks(prev => prev.map(task => 
-      task.id === id ? { ...task, ...updates } : task
-    ));
+    setTasks(prev => prev.map(task => {
+      if (task.id === id) {
+        const updatedTask = { ...task, ...updates };
+        if (updates.completed && !task.completed) {
+          updatedTask.completedAt = new Date().toISOString();
+        }
+        return updatedTask;
+      }
+      return task;
+    }));
   };
 
   const deleteTask = (id: string) => {
     setTasks(prev => prev.filter(task => task.id !== id));
+  };
+
+  const clearAllTasks = () => {
+    setTasks([]);
   };
 
   const scheduleReminder = (task: Task) => {
@@ -98,24 +97,40 @@ export const useTaskManager = () => {
         icon: '/favicon.ico',
       });
     } else {
-      // Fallback to console and alert for demo
       console.log(`🔔 Reminder: ${task.title}`);
       alert(`🔔 Hey! Don't forget: ${task.title}`);
     }
   };
 
-  // Request notification permission on first load
   useEffect(() => {
     if ('Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission();
     }
   }, []);
 
+  // Get today's tasks sorted by urgency (highest first)
+  const getTodaysTasks = () => {
+    const today = new Date().toISOString().split('T')[0];
+    return tasks
+      .filter(task => !task.isRegular && (!task.time || task.time.includes(today)))
+      .sort((a, b) => b.urgency - a.urgency);
+  };
+
+  // Get regular tasks sorted by urgency
+  const getRegularTasks = () => {
+    return tasks
+      .filter(task => task.isRegular)
+      .sort((a, b) => b.urgency - a.urgency);
+  };
+
   return {
     tasks,
     addTask,
     updateTask,
     deleteTask,
+    clearAllTasks,
     scheduleReminder,
+    getTodaysTasks,
+    getRegularTasks,
   };
 };

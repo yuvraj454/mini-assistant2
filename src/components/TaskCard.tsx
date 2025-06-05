@@ -7,8 +7,9 @@ interface Task {
   title: string;
   category: 'home' | 'business' | 'gym' | 'custom';
   time?: string;
-  urgency: number; // 1-5 scale
+  urgency: number;
   completed: boolean;
+  isRegular?: boolean;
 }
 
 interface TaskCardProps {
@@ -20,10 +21,10 @@ interface TaskCardProps {
 export const TaskCard = ({ task, onComplete, onEdit }: TaskCardProps) => {
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'home': return 'bg-peach-100 text-peach-700';
-      case 'business': return 'bg-sky-100 text-sky-700';
-      case 'gym': return 'bg-lavender-100 text-lavender-700';
-      default: return 'bg-cream-100 text-cream-700';
+      case 'home': return 'bg-cream-100 text-amber-700';
+      case 'business': return 'bg-amber-100 text-amber-800';
+      case 'gym': return 'bg-orange-100 text-orange-700';
+      default: return 'bg-cream-100 text-amber-700';
     }
   };
 
@@ -32,7 +33,7 @@ export const TaskCard = ({ task, onComplete, onEdit }: TaskCardProps) => {
       <Star
         key={i}
         className={`h-3 w-3 ${
-          i < urgency ? 'text-yellow-400 fill-current' : 'text-gray-300'
+          i < urgency ? 'text-amber-400 fill-current' : 'text-amber-300'
         }`}
       />
     ));
@@ -46,7 +47,7 @@ export const TaskCard = ({ task, onComplete, onEdit }: TaskCardProps) => {
       onClick={() => onEdit(task.id)}
     >
       <div className="flex items-start justify-between mb-2">
-        <h4 className={`font-medium ${task.completed ? 'line-through text-slate-500' : 'text-slate-800'}`}>
+        <h4 className={`font-medium ${task.completed ? 'line-through text-amber-500' : 'text-amber-800'}`}>
           {task.title}
         </h4>
         <div className="flex items-center gap-1">
@@ -59,10 +60,15 @@ export const TaskCard = ({ task, onComplete, onEdit }: TaskCardProps) => {
           <span className={`px-2 py-1 rounded-lg text-xs font-medium ${getCategoryColor(task.category)}`}>
             {task.category}
           </span>
-          {task.time && (
-            <div className="flex items-center gap-1 text-slate-500">
+          {task.isRegular && (
+            <span className="px-2 py-1 bg-amber-200 text-amber-800 rounded-lg text-xs font-medium">
+              Regular
+            </span>
+          )}
+          {task.time && !task.isRegular && (
+            <div className="flex items-center gap-1 text-amber-500">
               <Clock className="h-3 w-3" />
-              <span className="text-xs">{task.time}</span>
+              <span className="text-xs">{new Date(task.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
             </div>
           )}
         </div>
@@ -75,7 +81,7 @@ export const TaskCard = ({ task, onComplete, onEdit }: TaskCardProps) => {
           className={`w-6 h-6 rounded-full border-2 transition-colors ${
             task.completed
               ? 'bg-green-400 border-green-400'
-              : 'border-lavender-300 hover:border-lavender-400'
+              : 'border-amber-300 hover:border-amber-400'
           }`}
         >
           {task.completed && <span className="text-white text-xs">✓</span>}

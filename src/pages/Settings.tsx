@@ -7,36 +7,61 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Slider } from '@/components/ui/slider';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Volume2, User, Bell, Palette, Download, Trash2 } from 'lucide-react';
+import { Volume2, User, Bell, Palette, Download, Trash2, LogOut } from 'lucide-react';
+import { useAuthContext } from '@/contexts/AuthContext';
+import { useTask } from '@/contexts/TaskContext';
+import { useNotes } from '@/contexts/NotesContext';
+import { toast } from '@/hooks/use-toast';
 
 const Settings = () => {
+  const { user, logout, clearAllData } = useAuthContext();
+  const { clearAllTasks } = useTask();
+  const { clearAllNotes } = useNotes();
   const [voiceTone, setVoiceTone] = useState('female-friendly');
   const [reminderVolume, setReminderVolume] = useState([75]);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [autoJournal, setAutoJournal] = useState(false);
-  const [userName, setUserName] = useState('Buddy');
+  const [userName, setUserName] = useState(user?.name || 'User');
 
   const handleExportData = () => {
     console.log('Exporting data...');
+    toast({
+      title: "Export feature coming soon! 📦",
+      description: "We're working on data export functionality.",
+    });
   };
 
   const handleClearData = () => {
-    console.log('Clearing data...');
+    clearAllData();
+    clearAllTasks();
+    clearAllNotes();
+    toast({
+      title: "All data cleared! 🧹",
+      description: "Your tasks and notes have been removed.",
+    });
+  };
+
+  const handleLogout = () => {
+    logout();
+    toast({
+      title: "See you later! 👋",
+      description: "You've been logged out successfully.",
+    });
   };
 
   return (
     <Layout>
       <div className="max-w-md mx-auto space-y-6">
         <div className="mb-6">
-          <h1 className="text-2xl font-semibold text-slate-800 mb-2">Settings</h1>
-          <p className="text-slate-600">Customize your MyMiniSecretary experience! ⚙️</p>
+          <h1 className="text-2xl font-semibold text-amber-800 mb-2">Settings</h1>
+          <p className="text-amber-600">Customize your MyMiniSecretary experience! ⚙️</p>
         </div>
 
         {/* User Profile */}
         <div className="glass-card rounded-2xl p-6 cozy-shadow">
           <div className="flex items-center gap-2 mb-4">
-            <User className="h-5 w-5 text-lavender-500" />
-            <h3 className="text-lg font-medium text-slate-800">Profile</h3>
+            <User className="h-5 w-5 text-amber-500" />
+            <h3 className="text-lg font-medium text-amber-800">Profile</h3>
           </div>
           <div className="space-y-2">
             <Label htmlFor="username">Your Name</Label>
@@ -44,23 +69,26 @@ const Settings = () => {
               id="username"
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
-              className="rounded-xl border-lavender-200 focus:border-lavender-400"
+              className="rounded-xl border-amber-200 focus:border-amber-400 bg-cream-50"
             />
+          </div>
+          <div className="mt-4 text-sm text-amber-600">
+            Email: {user?.email}
           </div>
         </div>
 
         {/* Voice Settings */}
         <div className="glass-card rounded-2xl p-6 cozy-shadow">
           <div className="flex items-center gap-2 mb-4">
-            <Volume2 className="h-5 w-5 text-sky-500" />
-            <h3 className="text-lg font-medium text-slate-800">Voice & Audio</h3>
+            <Volume2 className="h-5 w-5 text-amber-500" />
+            <h3 className="text-lg font-medium text-amber-800">Voice & Audio</h3>
           </div>
           
           <div className="space-y-4">
             <div className="space-y-2">
               <Label>Voice Tone</Label>
               <Select value={voiceTone} onValueChange={setVoiceTone}>
-                <SelectTrigger className="rounded-xl border-lavender-200">
+                <SelectTrigger className="rounded-xl border-amber-200 bg-cream-50">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -89,8 +117,8 @@ const Settings = () => {
         {/* Notifications */}
         <div className="glass-card rounded-2xl p-6 cozy-shadow">
           <div className="flex items-center gap-2 mb-4">
-            <Bell className="h-5 w-5 text-peach-500" />
-            <h3 className="text-lg font-medium text-slate-800">Notifications</h3>
+            <Bell className="h-5 w-5 text-amber-500" />
+            <h3 className="text-lg font-medium text-amber-800">Notifications</h3>
           </div>
           
           <div className="space-y-4">
@@ -117,21 +145,21 @@ const Settings = () => {
         {/* Categories */}
         <div className="glass-card rounded-2xl p-6 cozy-shadow">
           <div className="flex items-center gap-2 mb-4">
-            <Palette className="h-5 w-5 text-lavender-500" />
-            <h3 className="text-lg font-medium text-slate-800">Custom Categories</h3>
+            <Palette className="h-5 w-5 text-amber-500" />
+            <h3 className="text-lg font-medium text-amber-800">Custom Categories</h3>
           </div>
           
           <div className="space-y-2">
             <div className="flex gap-2">
               <Input
                 placeholder="Add new category..."
-                className="rounded-xl border-lavender-200 focus:border-lavender-400"
+                className="rounded-xl border-amber-200 focus:border-amber-400 bg-cream-50"
               />
-              <Button variant="outline" className="rounded-xl">Add</Button>
+              <Button variant="outline" className="rounded-xl border-amber-200 text-amber-700">Add</Button>
             </div>
             <div className="flex flex-wrap gap-2 mt-3">
               {['Home', 'Business', 'Gym', 'Health'].map((category) => (
-                <span key={category} className="px-3 py-1 bg-lavender-100 text-lavender-700 rounded-lg text-sm">
+                <span key={category} className="px-3 py-1 bg-amber-100 text-amber-700 rounded-lg text-sm">
                   {category}
                 </span>
               ))}
@@ -141,13 +169,13 @@ const Settings = () => {
 
         {/* Data Management */}
         <div className="glass-card rounded-2xl p-6 cozy-shadow">
-          <h3 className="text-lg font-medium text-slate-800 mb-4">Data Management</h3>
+          <h3 className="text-lg font-medium text-amber-800 mb-4">Data Management</h3>
           
           <div className="space-y-3">
             <Button
               onClick={handleExportData}
               variant="outline"
-              className="w-full rounded-xl border-lavender-200 text-lavender-700 hover:bg-lavender-50"
+              className="w-full rounded-xl border-amber-200 text-amber-700 hover:bg-amber-50"
             >
               <Download className="h-4 w-4 mr-2" />
               Export My Data
@@ -160,6 +188,15 @@ const Settings = () => {
             >
               <Trash2 className="h-4 w-4 mr-2" />
               Clear All Data
+            </Button>
+
+            <Button
+              onClick={handleLogout}
+              variant="outline"
+              className="w-full rounded-xl border-orange-200 text-orange-700 hover:bg-orange-50"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign Out
             </Button>
           </div>
         </div>
